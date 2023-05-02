@@ -11,12 +11,14 @@ There is an example env.py named env.py.example that shows how to setup this fil
 
 *Current State - Open*
 
+- Show ChatGPT logo?
+
 Felix:
 - Fill database with texts for all labels
 - Regain api key
 
 Tobias:
-- Fit text into bounding boxes (approx.) or think of another solution.
+- Fit text into bounding boxes (approx.) or think of another solution. -> implemented
 - Maybe try to limit predictions to the top 2 (if possible) 
 
 

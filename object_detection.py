@@ -1,30 +1,26 @@
-
+#pip install opencv-python
 import cv2
 import torch
+import textwrap
 
-from PIL import Image
 
-
-def plot_description(img, label, x, y):
+def plot_description(img, label, x, y, len_text):
     font = cv2.FONT_HERSHEY_SIMPLEX
-    org = (x, y)
     fontScale = 0.5
     font_color = (255, 255, 255)
     thickness = 1
-    # text_color_bg=(0, 0, 0)
 
-    # x, y = org
-    # text_size, _ = cv2.getTextSize(label, font, fontScale, thickness)
-    # text_w, text_h = text_size
-    # cv2.rectangle(img, org, (x + text_w, y - text_h), color, -1)
-    cv2.putText(img, label, org, font, fontScale,
-                font_color, thickness, cv2.LINE_AA)
+    dic = {"ä":"ae", "Ä":"Ae", "ö":"oe", "Ö":"Oe", "ü":"ue", "Ü":"ue"}
+    for i, j in dic.items():
+        label = label.replace(i, j)
 
-    # Generate Colors
-    # names = model.module.names if hasattr(model, 'module') else model.names
-    # colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(names))]
-    # colors=[colors(x, True) for x in 1000[:, 5]]
+    label = textwrap.wrap(label, int(len_text / 9))
+    pos = 15 * (len(label)-1)
 
+    for i in range(0, len(label)):
+        cv2.putText(img, label[i], (x, y-pos), font, fontScale,
+                    font_color, thickness, cv2.LINE_AA)
+        pos = pos - 15
 
 if __name__ == "__main__":
 
@@ -48,15 +44,15 @@ if __name__ == "__main__":
         # Display the resulting frame
         results = model(frame)
 
-        # Label von erkannten Objekten auslesen
+        # Read label from detected objects
         df = results.pandas().xyxy[0]
 
-        # Label in Modell ändern
+        # Change label in model
         for i in df['class']:
 
             # Name of label -> model.names[i]
 
-            # plot description
+            # Plot description
             for box in results.xyxy[0]:
                 if box[5] == i:
                     xB = int(box[2])
@@ -64,7 +60,7 @@ if __name__ == "__main__":
                     yB = int(box[3])
                     yA = int(box[1])
 
-                    plot_description(frame, "text...", xA+5, yB-5)
+                    plot_description(frame, "Der Mensch ist nach der biologischen Systematik eine Art der Gattung Homo aus der Familie der Menschenaffen", xA+5, yB-5, xB-xA)
 
         cv2.imshow("Object Detection", results.render()[0])
 
