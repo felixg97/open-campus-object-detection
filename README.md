@@ -3,7 +3,7 @@
 
 To run the application. Use: 
 
-```console
+```properties
 python main.py
 ```
 
