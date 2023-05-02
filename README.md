@@ -3,9 +3,9 @@
 
 To run the application. Use: 
 
-``
+
 > python main.py
-``
+
 
 *Current State - Open*
 
