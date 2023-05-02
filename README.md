@@ -10,12 +10,12 @@ To run the application. Use:
 *Current State - Open*
 
 Felix:
-[] Fill database with texts for all labels
-[] Regain api key
+- [] Fill database with texts for all labels
+- [] Regain api key
 
 Tobias:
-[] Fit text into bounding boxes (approx.) or think of another solution.
-[] Maybe try to limit predictions to the top 2 (if possible) 
+- [] Fit text into bounding boxes (approx.) or think of another solution.
+- [] Maybe try to limit predictions to the top 2 (if possible) 
 
 
 *Info*
