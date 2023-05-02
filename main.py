@@ -13,11 +13,11 @@ if __name__ == "__main__":
 
     storage = KeyValueStorage(BASE_PATH)
 
-    api = ChatgptApi(API_KEY, keyvalue_storage=storage, mode="test")
+    api = ChatgptApi(API_KEY, keyvalue_storage=storage)
 
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    yolo5 = torch.hub.load('ultralytics/yolov5', 'yolov5s')
 
-    window_capture = WindowCapture(model=model, api=api)
+    window_capture = WindowCapture(model=yolo5, api=api, base_path=BASE_PATH)
 
     if False:
         storage.delete_all()
@@ -27,12 +27,7 @@ if __name__ == "__main__":
         storage.show_entries()
         exit()
 
-    # response = api.get_label_response("person")
-    # response = api.get_dummy_reponse()
-
-    # print(response)
-
-    if False:
+    if True:
         window_capture.start_capturing(cam=0)
 
     pass

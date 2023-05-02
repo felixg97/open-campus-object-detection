@@ -4,11 +4,10 @@ import json
 
 class ChatgptApi():
 
-    def __init__(self, api_key, gpt_model=None, keyvalue_storage=None, mode="default"):
+    def __init__(self, api_key, gpt_model=None, keyvalue_storage=None):
 
         self.api_key = api_key
         self.keyvalue_storage = keyvalue_storage
-        self.mode = mode  # default, delete, test
 
         self.gpt_model = None
         if not gpt_model or gpt_model == "gpt-3.5":
@@ -21,10 +20,10 @@ class ChatgptApi():
 
         openai.api_key = self.api_key
 
-    def get_label_response(self, label):
+    def get_label_response(self, label, test=False):
 
-        if self.mode == "test":
-            return self._get_dummy_reponse()
+        if test:
+            return self._get_dummy_response()
 
         if self.keyvalue_storage:
             response = self.keyvalue_storage.get(label)
@@ -70,7 +69,7 @@ class ChatgptApi():
 
         return response
 
-    def _get_dummy_reponse(self):
+    def _get_dummy_response(self):
 
         dummy_response = \
             """

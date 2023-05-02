@@ -1,36 +1,36 @@
 import cv2
+import numpy as np
 
 from PIL import Image
+
+import torch
 
 
 class WindowCapture():
 
-    def __init__(self, model=None, api=None, window_name="Object Detection"):
+    def __init__(self, model=None, api=None, base_path=None, window_name="Object Detection"):
         self.model = model
         self.api = api
+        self.base_path = base_path
 
         self.window_name = window_name
 
-        self.detection_active = False
+        self.logo = None
         self.capture = None
 
-    def toggle_detection(self):
-        if not self.model:
-            raise Exception("No model loaded!")
-        self.detection_active = not self.detection_active
-
     def start_capturing(self, cam=0):
-        # capture.open(0)  # -> internal Webcam
-        # capture.open(1)  # -> external Webcam
         self.capture = cv2.VideoCapture()
         self.capture.open(cam)
+
+        self.logo = cv2.imread(
+            self.base_path + "/assets/chatgpt_logo.png", cv2.IMREAD_UNCHANGED)
 
         while True:
             # Capture the video frame
             ret, frame = self.capture.read()
 
-            if self.model and self.detection_active:
-                # Display the resulting frame
+            if self.model:
+                # Display the results of the current frame
                 results = self.model(frame)
 
                 # Label von erkannten Objekten auslesen
@@ -40,6 +40,13 @@ class WindowCapture():
                 for i in df['class']:
                     # Name of label -> model.names[i]
 
+                    label = self.model.names[i]
+
+                    text = "No description."
+                    if self.api:
+                        text = self.api.get_label_response(label, test=True)
+                        pass
+
                     # plot description
                     for box in results.xyxy[0]:
                         if box[5] == i:
@@ -48,11 +55,12 @@ class WindowCapture():
                             yB = int(box[3])
                             yA = int(box[1])
 
-                self._plot_description(frame, "text...", xA+5, yB-5)
+                            self._draw_content(
+                                frame, text, xA+5, yB-5)
 
-                cv2.imshow("Object Detection", results.render()[0])
+                cv2.imshow(self.window_name, results.render()[0])
             else:
-                cv2.imshow("Object Detection", frame)
+                cv2.imshow(self.window_name, frame)
 
             # the 'q' button is set as the quitting button
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -66,28 +74,73 @@ class WindowCapture():
         # Destroy all the windows
         cv2.destroyAllWindows()
 
-    def _plot_description(self, img, label, x, y):
-
-        # retrieve description from api
-        text = "No description"
-        if self.api:
-            self.api.get_dummy_response()
+    def _draw_content(self, img, label, x, y):
 
         font = cv2.FONT_HERSHEY_SIMPLEX
         org = (x, y)
         fontScale = 0.5
         font_color = (255, 255, 255)
         thickness = 1
-        # text_color_bg=(0, 0, 0)
 
-        # x, y = org
-        # text_size, _ = cv2.getTextSize(label, font, fontScale, thickness)
-        # text_w, text_h = text_size
-        # cv2.rectangle(img, org, (x + text_w, y - text_h), color, -1)
         cv2.putText(img, label, org, font, fontScale,
                     font_color, thickness, cv2.LINE_AA)
 
-        # Generate Colors
-        # names = model.module.names if hasattr(model, 'module') else model.names
-        # colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(names))]
-        # colors=[colors(x, True) for x in 1000[:, 5]]
+        # Draw white rectangle with logo
+        image_height, image_width = img.shape[:2]
+
+        rectangle_color = (255, 255, 255)
+
+        rectangle_width_ratio = 0.2
+        rectangle_height_ratio = 0.05
+
+        rectangle_width = int(image_width * rectangle_width_ratio)
+        rectangle_height = int(image_height * rectangle_height_ratio)
+
+        top_left_corner = (0, image_height - rectangle_height)
+        bottom_right_corner = (rectangle_width, image_height)
+
+        cv2.rectangle(img, top_left_corner,
+                      bottom_right_corner, rectangle_color, thickness=-1)
+
+        # Draw logo
+        padding = 5
+        logo_height = rectangle_height - 2 * padding
+        logo_width = int(self.logo.shape[1] *
+                         (logo_height / self.logo.shape[0]))
+        resized_logo = cv2.resize(
+            self.logo, (logo_width, logo_height), interpolation=cv2.INTER_AREA)
+
+        logo_x = top_left_corner[0] + padding
+        logo_y = top_left_corner[1] + padding
+        frame = self._overlay_image(img, resized_logo, logo_x, logo_y)
+
+        # Write message in rectangle
+        text_line1 = "The texts are generated with"
+        text_line2 = "OpenAI's GPT-3.5"
+        font_scale = 0.5
+        font_thickness = 1
+        text_color = (0, 0, 0)  # black
+
+        # Write the first line of text
+        text_x = top_left_corner[0] + padding + logo_width + padding
+        text_y = top_left_corner[1] + padding + int(3 * padding)
+        cv2.putText(frame, text_line1, (text_x, text_y), font,
+                    font_scale, text_color, font_thickness, cv2.LINE_AA)
+
+        # Write the second line of text
+        text_y += int(4 * padding)
+        cv2.putText(frame, text_line2, (text_x, text_y), font,
+                    font_scale, text_color, font_thickness, cv2.LINE_AA)
+
+    def _overlay_image(self, background, foreground, x, y):
+        foreground_alpha = foreground[:, :, 3] / 255.0
+        background_alpha = 1.0 - foreground_alpha
+
+        for c in range(0, 3):
+            background[y:y+foreground.shape[0], x:x+foreground.shape[1], c] = (
+                foreground_alpha * foreground[:, :, c] +
+                background_alpha *
+                background[y:y+foreground.shape[0], x:x+foreground.shape[1], c]
+            )
+
+        return background

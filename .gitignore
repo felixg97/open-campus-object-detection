@@ -9,3 +9,6 @@ env.py
 __pycache__/
 /__pycache__
 *.pyc
+
+# pytorch stuff
+*.pt
