@@ -3,8 +3,9 @@
 
 To run the application. Use: 
 
-
-> python main.py
+```console
+python main.py
+```
 
 There is an example env.py named env.py.example that shows how to setup this file.
 
