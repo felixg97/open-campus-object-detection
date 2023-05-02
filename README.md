@@ -21,6 +21,8 @@ Tobias:
 
 *Info*
 
-Use the api.get_response method only like this api.get_label_response(label, test=True)
+Use the api.get_response method only like this 
+
+``api.get_label_response(label, test=True)``
 
 The database will be filled for all YoloV5 Lables to be able to display it at Open Campus
