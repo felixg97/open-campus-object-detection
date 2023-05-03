@@ -1,26 +1,31 @@
 # open-campus-object-detection
 
 
-To run the application use: 
+### Instructions - Setup & Run
 
+Step 1: Install required python packages (see requirements.txt)
+
+Step 2: Setup env.py file as shown in env.py.example
+
+Step 3: Run the application as follows
+
+Terminal/Command line input:
 ```properties
 python main.py
 ```
 
-There is an example env.py named env.py.example that shows how to setup this file.
+### Current State - Open
 
-*Current State - Open*
-
-Felix:
+*Felix*
 - Fill database with texts for all labels
 - Regain api key
 
-Tobias:
+*Tobias*
 - Fit text into bounding boxes (approx.) or think of another solution.
 - Maybe try to limit predictions to the top 2 (if possible) 
 
 
-*Info*
+### Info
 
 Use the api.get_response method only like this 
 
