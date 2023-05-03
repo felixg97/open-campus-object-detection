@@ -34,3 +34,9 @@ api.get_label_response(label, test=True)
 ```
 
 The database will be filled for all YoloV5 Lables to be able to display it at Open Campus
+
+### Structure - UML Diagram
+
+
+
+
