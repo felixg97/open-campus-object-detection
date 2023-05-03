@@ -5,19 +5,19 @@ from PIL import Image
 from env import API_KEY
 from env import BASE_PATH
 from database.key_value_storage import KeyValueStorage
-from apis.chatgpt import ChatgptApi
-from window_capture import WindowCapture
+from apis.chatgpt_api import ChatgptApi
+from object_detection_app import ObjectDetectionApp
 
 
 if __name__ == "__main__":
 
     storage = KeyValueStorage(BASE_PATH)
 
-    api = ChatgptApi(API_KEY, keyvalue_storage=storage)
+    api = ChatgptApi(API_KEY, database=storage)
 
     yolo5 = torch.hub.load('ultralytics/yolov5', 'yolov5s')
 
-    window_capture = WindowCapture(model=yolo5, api=api, base_path=BASE_PATH)
+    app = ObjectDetectionApp(model=yolo5, api=api, base_path=BASE_PATH)
 
     if False:
         storage.delete_all()
@@ -28,6 +28,6 @@ if __name__ == "__main__":
         exit()
 
     if True:
-        window_capture.start_capturing(cam=0)
+        app.start_capturing(cam=0)
 
     pass

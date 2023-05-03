@@ -11,7 +11,7 @@ class KeyValueStorage():
 
         self.base_path = base_path
         self.storage_path = self.base_path + "/assets/"
-        self.file_name = "storage.json"
+        self.storage_file_name = "storage.json"
 
         # create storage if it doesn't exist
         if not os.path.exists(self.storage_path + self.file_name):

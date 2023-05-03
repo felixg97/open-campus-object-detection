@@ -4,10 +4,10 @@ import json
 
 class ChatgptApi():
 
-    def __init__(self, api_key, gpt_model=None, keyvalue_storage=None):
+    def __init__(self, api_key, gpt_model=None, database=None):
 
         self.api_key = api_key
-        self.keyvalue_storage = keyvalue_storage
+        self.database = database
 
         self.gpt_model = None
         if not gpt_model or gpt_model == "gpt-3.5":
@@ -25,8 +25,8 @@ class ChatgptApi():
         if test:
             return self._get_dummy_response()
 
-        if self.keyvalue_storage:
-            response = self.keyvalue_storage.get(label)
+        if self.database:
+            response = self.database.get(label)
             if response:
                 return response
 
@@ -65,7 +65,7 @@ class ChatgptApi():
 
         response = response1 + " " + response2
 
-        self.keyvalue_storage.update(label, response)
+        self.database.update(label, response)
 
         return response
 

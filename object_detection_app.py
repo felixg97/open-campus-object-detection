@@ -6,7 +6,7 @@ from PIL import Image
 import torch
 
 
-class WindowCapture():
+class ObjectDetectionApp():
 
     def __init__(self, model=None, api=None, base_path=None, window_name="Object Detection"):
         self.model = model
@@ -116,7 +116,7 @@ class WindowCapture():
 
         # Write message in rectangle
         text_line1 = "The texts are generated with"
-        text_line2 = "OpenAI's GPT-3.5"
+        text_line2 = "OpenAI's GPT-3.5"  # INFO: this is hardcoded - be careful
         font_scale = 0.5
         font_thickness = 1
         text_color = (0, 0, 0)  # black
