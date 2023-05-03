@@ -1,7 +1,7 @@
 # open-campus-object-detection
 
 
-To run the application. Use: 
+To run the application use: 
 
 ```properties
 python main.py
