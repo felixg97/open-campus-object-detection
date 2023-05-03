@@ -1,9 +1,5 @@
 import cv2
-import numpy as np
-
-from PIL import Image
-
-import torch
+import textwrap
 
 
 class ObjectDetectionApp():
@@ -17,8 +13,16 @@ class ObjectDetectionApp():
 
         self.logo = None
         self.capture = None
+        self.results = None
 
     def start_capturing(self, cam=0):
+
+        # Fullscreen
+        #window_name = "Object Detection"
+        #cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+        #cv2.setWindowProperty(
+        #    window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
         self.capture = cv2.VideoCapture()
         self.capture.open(cam)
 
@@ -31,12 +35,12 @@ class ObjectDetectionApp():
 
             if self.model:
                 # Display the results of the current frame
-                results = self.model(frame)
+                self.results = self.model(frame)
 
-                # Label von erkannten Objekten auslesen
-                df = results.pandas().xyxy[0]
+                # Read label
+                df = self.results.pandas().xyxy[0]
 
-                # Label in Modell ändern
+                # Change label in model
                 for i in df['class']:
                     # Name of label -> model.names[i]
 
@@ -47,8 +51,8 @@ class ObjectDetectionApp():
                         text = self.api.get_label_response(label, test=True)
                         pass
 
-                    # plot description
-                    for box in results.xyxy[0]:
+                    # Plot description
+                    for box in self.results.xyxy[0]:
                         if box[5] == i:
                             xB = int(box[2])
                             xA = int(box[0])
@@ -56,9 +60,9 @@ class ObjectDetectionApp():
                             yA = int(box[1])
 
                             self._draw_content(
-                                frame, text, xA+5, yB-5)
+                                frame, text, xA + 5, yB - 5, xB, yB, xB - xA)
 
-                cv2.imshow(self.window_name, results.render()[0])
+                cv2.imshow(self.window_name, self.results.render()[0])
             else:
                 cv2.imshow(self.window_name, frame)
 
@@ -67,23 +71,42 @@ class ObjectDetectionApp():
                 self.end_capturing()
                 break
 
-    def end_capturing(self,):
+    def end_capturing(self, ):
         # After the loop release the cap object
         self.capture.release()
 
         # Destroy all the windows
         cv2.destroyAllWindows()
 
-    def _draw_content(self, img, label, x, y):
+    def _draw_content(self, img, label, xA, yA, xB, yB, len_text):
 
         font = cv2.FONT_HERSHEY_SIMPLEX
-        org = (x, y)
+        org = (xA, yA)
         fontScale = 0.5
         font_color = (255, 255, 255)
+        text_color_bg = (146, 146, 148, 0.5)
         thickness = 1
+        overlay = img.copy()
+        alpha = 0.3
 
-        cv2.putText(img, label, org, font, fontScale,
-                    font_color, thickness, cv2.LINE_AA)
+        dic = {"ä": "ae", "Ä": "Ae", "ö": "oe", "Ö": "Oe", "ü": "ue", "Ü": "ue"}
+        for i, j in dic.items():
+            label = label.replace(i, j)
+
+        label = textwrap.wrap(label, int(len_text / 9))
+
+        pos = 15 * (len(label) - 1)
+
+        cv2.rectangle(overlay, (xA,yA - pos - 15), (xB, yB), text_color_bg, -1)
+
+        # Better performance: without transparent background form, then comment out line 165 addWeighted(...)
+        #cv2.rectangle(img, (xA,yA - pos - 15), (xB, yB), text_color_bg, -1)
+
+        for i in range(0, len(label)):
+            cv2.putText(img, label[i], (xA, yA - pos), font, fontScale,
+                        font_color, thickness, cv2.LINE_AA)
+
+            pos = pos - 15
 
         # Draw white rectangle with logo
         image_height, image_width = img.shape[:2]
@@ -132,15 +155,19 @@ class ObjectDetectionApp():
         cv2.putText(frame, text_line2, (text_x, text_y), font,
                     font_scale, text_color, font_thickness, cv2.LINE_AA)
 
+        # Following line overlays transparent rectangle
+        # over the image
+        self.results = self.model(cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0))
+
     def _overlay_image(self, background, foreground, x, y):
         foreground_alpha = foreground[:, :, 3] / 255.0
         background_alpha = 1.0 - foreground_alpha
 
         for c in range(0, 3):
-            background[y:y+foreground.shape[0], x:x+foreground.shape[1], c] = (
-                foreground_alpha * foreground[:, :, c] +
-                background_alpha *
-                background[y:y+foreground.shape[0], x:x+foreground.shape[1], c]
+            background[y:y + foreground.shape[0], x:x + foreground.shape[1], c] = (
+                    foreground_alpha * foreground[:, :, c] +
+                    background_alpha *
+                    background[y:y + foreground.shape[0], x:x + foreground.shape[1], c]
             )
 
         return background
