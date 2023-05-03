@@ -37,6 +37,6 @@ The database will be filled for all YoloV5 Lables to be able to display it at Op
 
 ### Structure - UML Diagram
 
+![Structure - uml-diagram.svg](assets/uml-diagram.svg)
 
-
-
+``<uses>`` indicates a dependency injection, e.g.: ``A <uses> B`` means ``B is injected into A``
