@@ -14,11 +14,12 @@ class KeyValueStorage():
         self.storage_file_name = "storage.json"
 
         # create storage if it doesn't exist
-        if not os.path.exists(self.storage_path + self.file_name):
+        if not os.path.exists(self.storage_path + self.storage_file_name):
             df = pd.DataFrame(columns=["key", "value"])
-            df.to_hdf(self.storage_path + self.file_name, key="df")
+            df.to_hdf(self.storage_path + self.storage_file_name, key="df")
 
-        self.storage = pd.read_hdf(self.storage_path + self.file_name, "df")
+        self.storage = pd.read_hdf(
+            self.storage_path + self.storage_file_name, "df")
 
     def get(self, key):
         _key = key.lower()
@@ -39,7 +40,8 @@ class KeyValueStorage():
             new_df = pd.DataFrame([new_row])
             self.storage = pd.concat([self.storage, new_df], ignore_index=True)
 
-            self.storage.to_hdf(self.storage_path + self.file_name, key="df")
+            self.storage.to_hdf(self.storage_path +
+                                self.storage_file_name, key="df")
 
     def delete(self, key):
         _key = key.lower()
@@ -47,11 +49,13 @@ class KeyValueStorage():
 
         if _key in keys:
             self.storage[self.storage["key"] == key].drop()
-            self.storage.to_hdf(self.storage_path + self.file_name, key="df")
+            self.storage.to_hdf(self.storage_path +
+                                self.storage_file_name, key="df")
 
     def delete_all(self):
         self.storage.drop(self.storage.index, inplace=True)
-        self.storage.to_hdf(self.storage_path + self.file_name, key="df")
+        self.storage.to_hdf(self.storage_path +
+                            self.storage_file_name, key="df")
 
     def show_entries(self):
         pd.set_option('display.max_rows', self.storage.shape[0]+1)
