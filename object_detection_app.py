@@ -125,31 +125,14 @@ class ObjectDetectionApp():
 
         rectangle_color = (255, 255, 255)
 
-        rectangle_width_ratio = 0.2
-        rectangle_height_ratio = 0.05
-
-        rectangle_width = int(image_width * rectangle_width_ratio)
-        rectangle_height = int(image_height * rectangle_height_ratio)
-
-        top_left_corner = (0, image_height - rectangle_height)
-        bottom_right_corner = (rectangle_width, image_height)
-
-        cv2.rectangle(img, top_left_corner,
-                      bottom_right_corner, rectangle_color, thickness=-1)
-
-        # Draw white rectangle with logo
-        image_height, image_width = img.shape[:2]
-
-        rectangle_color = (255, 255, 255)
-
         rectangle_width_ratio = 0.445
         rectangle_height_ratio = 0.1
 
         rectangle_width = int(image_width * rectangle_width_ratio)
         rectangle_height = int(image_height * rectangle_height_ratio)
 
-        top_left_corner = (0, image_height - rectangle_height)
-        bottom_right_corner = (rectangle_width, image_height)
+        top_left_corner = (0, 0)
+        bottom_right_corner = (rectangle_width, 49)
 
         cv2.rectangle(img, top_left_corner,
                       bottom_right_corner, rectangle_color, thickness=-1)
@@ -163,7 +146,7 @@ class ObjectDetectionApp():
             self.logo, (logo_width, logo_height), interpolation=cv2.INTER_AREA)
 
         logo_x = top_left_corner[0] + padding
-        logo_y = top_left_corner[1] + padding
+        logo_y = 0 + padding + 1
         frame = self._overlay_image(img, resized_logo, logo_x, logo_y)
 
         # Write message in rectangle
@@ -175,37 +158,39 @@ class ObjectDetectionApp():
 
         # Write the first line of text
         text_x = top_left_corner[0] + padding + logo_width + padding
-        text_y = top_left_corner[1] + padding + int(3 * padding)
+        text_y = 20
         cv2.putText(frame, text_line1, (text_x, text_y), font,
                     font_scale, text_color, font_thickness, cv2.LINE_AA)
 
         # Write the second line of text
-        text_y += int(4 * padding)
-        cv2.putText(frame, text_line2, (text_x, text_y), font,
+        text_y2 = text_y + int(4 * padding)
+        cv2.putText(frame, text_line2, (text_x, text_y2), font,
                     font_scale, text_color, font_thickness, cv2.LINE_AA)
 
-        # Logo HS Aalen
-        top_left_corner = (0 + 421, image_height - rectangle_height)
-        bottom_right_corner = (rectangle_width + 421, image_height)
+        # Draw white rectangle with logo
+        top_left_corner = (0 + 421, 0)
+        bottom_right_corner = (rectangle_width + 421, 49)
 
         cv2.rectangle(img, top_left_corner,
                       bottom_right_corner, rectangle_color, thickness=-1)
 
+        # Draw logo
         resized_logo_HS_Aalen = cv2.resize(
             self.logo_HS_Aalen, (logo_width, logo_height), interpolation=cv2.INTER_AREA)
 
         frame = self._overlay_image(img, resized_logo_HS_Aalen, logo_x + 421, logo_y)
 
+        # Write message in rectangle
+        text_line1 = "Hochschule Aalen"
+        text_line2 = "Wirtschaftsinformatik"
+
         # Write the first line of text
         text_x = top_left_corner[0] + padding + logo_width + padding
-        # text_y = top_left_corner[1] + padding + int(3 * padding)
-        text_y = 450
-        cv2.putText(frame, "Hochschule Aalen", (text_x, text_y), font,
+        cv2.putText(frame, text_line1, (text_x, text_y), font,
                     font_scale, text_color, font_thickness, cv2.LINE_AA)
 
         # Write the second line of text
-        text_y = 470
-        cv2.putText(frame, "Wirtschaftsinformatik", (text_x, text_y), font,
+        cv2.putText(frame, text_line2, (text_x, text_y2), font,
                     font_scale, text_color, font_thickness, cv2.LINE_AA)
 
         # Following line overlays transparent rectangle
