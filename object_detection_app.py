@@ -18,10 +18,12 @@ class ObjectDetectionApp():
 
     def start_capturing(self, cam=0):
 
-        # Fullscreen
         window_name = "Object Detection"
         cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+        # Fullscreen
         cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+        #cv2.resizeWindow(window_name, 1920, 1080)
 
         self.capture = cv2.VideoCapture()
         self.capture.open(cam)
@@ -85,7 +87,7 @@ class ObjectDetectionApp():
 
         font = cv2.FONT_HERSHEY_SIMPLEX
         org = (xA, yA)
-        fontScale = 0.5
+        fontScale = 0.4
         font_color = (255, 255, 255)
         text_color_bg = (146, 146, 148, 0.5)
         thickness = 1
@@ -97,7 +99,12 @@ class ObjectDetectionApp():
         for i, j in dic.items():
             label = label.replace(i, j)
 
-        label = textwrap.wrap(label, int(len_text / 9))
+        text_box = int(len_text / 7)
+
+        if(text_box == 0):
+            text_box = 1
+
+        label = textwrap.wrap(label, text_box)
 
         pos = 15 * (len(label) - 1)
 
@@ -135,7 +142,7 @@ class ObjectDetectionApp():
 
         rectangle_color = (255, 255, 255)
 
-        rectangle_width_ratio = 0.44
+        rectangle_width_ratio = 0.445
         rectangle_height_ratio = 0.1
 
         rectangle_width = int(image_width * rectangle_width_ratio)
@@ -178,8 +185,8 @@ class ObjectDetectionApp():
                     font_scale, text_color, font_thickness, cv2.LINE_AA)
 
         # Logo HS Aalen
-        top_left_corner = (0 + 420, image_height - rectangle_height)
-        bottom_right_corner = (rectangle_width + 420, image_height)
+        top_left_corner = (0 + 421, image_height - rectangle_height)
+        bottom_right_corner = (rectangle_width + 421, image_height)
 
         cv2.rectangle(img, top_left_corner,
                       bottom_right_corner, rectangle_color, thickness=-1)
@@ -187,13 +194,13 @@ class ObjectDetectionApp():
         resized_logo_HS_Aalen = cv2.resize(
             self.logo_HS_Aalen, (logo_width, logo_height), interpolation=cv2.INTER_AREA)
 
-        frame = self._overlay_image(img, resized_logo_HS_Aalen, logo_x + 420, logo_y)
+        frame = self._overlay_image(img, resized_logo_HS_Aalen, logo_x + 421, logo_y)
 
         # Write the first line of text
         text_x = top_left_corner[0] + padding + logo_width + padding
         # text_y = top_left_corner[1] + padding + int(3 * padding)
         text_y = 450
-        cv2.putText(frame, "HS Aalen", (text_x, text_y), font,
+        cv2.putText(frame, "Hochschule Aalen", (text_x, text_y), font,
                     font_scale, text_color, font_thickness, cv2.LINE_AA)
 
         # Write the second line of text
