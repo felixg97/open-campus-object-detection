@@ -12,22 +12,25 @@ class ObjectDetectionApp():
         self.window_name = window_name
 
         self.logo = None
+        self.logo_HS_Aalen = None
         self.capture = None
         self.results = None
 
     def start_capturing(self, cam=0):
 
         # Fullscreen
-        # window_name = "Object Detection"
-        # cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
-        # cv2.setWindowProperty(
-        #    window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        window_name = "Object Detection"
+        cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+        cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
         self.capture = cv2.VideoCapture()
         self.capture.open(cam)
 
         self.logo = cv2.imread(
             self.base_path + "/assets/chatgpt_logo.png", cv2.IMREAD_UNCHANGED)
+
+        self.logo_HS_Aalen = cv2.imread(
+            self.base_path + "/assets/HS_Aalen_logo.png", cv2.IMREAD_UNCHANGED)
 
         while True:
             # Capture the video frame
@@ -98,8 +101,8 @@ class ObjectDetectionApp():
 
         pos = 15 * (len(label) - 1)
 
-        cv2.rectangle(overlay, (xA, yA - pos - 15),
-                      (xB, yB), text_color_bg, -1)
+        #cv2.rectangle(overlay, (xA, yA - pos - 15),
+         #             (xB, yB), text_color_bg, -1)
 
         # Better performance: without transparent background form, then comment out line 165 addWeighted(...)
         # cv2.rectangle(img, (xA,yA - pos - 15), (xB, yB), text_color_bg, -1)
@@ -117,6 +120,23 @@ class ObjectDetectionApp():
 
         rectangle_width_ratio = 0.2
         rectangle_height_ratio = 0.05
+
+        rectangle_width = int(image_width * rectangle_width_ratio)
+        rectangle_height = int(image_height * rectangle_height_ratio)
+
+        top_left_corner = (0, image_height - rectangle_height)
+        bottom_right_corner = (rectangle_width, image_height)
+
+        cv2.rectangle(img, top_left_corner,
+                      bottom_right_corner, rectangle_color, thickness=-1)
+
+        # Draw white rectangle with logo
+        image_height, image_width = img.shape[:2]
+
+        rectangle_color = (255, 255, 255)
+
+        rectangle_width_ratio = 0.44
+        rectangle_height_ratio = 0.1
 
         rectangle_width = int(image_width * rectangle_width_ratio)
         rectangle_height = int(image_height * rectangle_height_ratio)
@@ -157,10 +177,33 @@ class ObjectDetectionApp():
         cv2.putText(frame, text_line2, (text_x, text_y), font,
                     font_scale, text_color, font_thickness, cv2.LINE_AA)
 
+        # Logo HS Aalen
+        top_left_corner = (0 + 420, image_height - rectangle_height)
+        bottom_right_corner = (rectangle_width + 420, image_height)
+
+        cv2.rectangle(img, top_left_corner,
+                      bottom_right_corner, rectangle_color, thickness=-1)
+
+        resized_logo_HS_Aalen = cv2.resize(
+            self.logo_HS_Aalen, (logo_width, logo_height), interpolation=cv2.INTER_AREA)
+
+        frame = self._overlay_image(img, resized_logo_HS_Aalen, logo_x + 420, logo_y)
+
+        # Write the first line of text
+        text_x = top_left_corner[0] + padding + logo_width + padding
+        # text_y = top_left_corner[1] + padding + int(3 * padding)
+        text_y = 450
+        cv2.putText(frame, "HS Aalen", (text_x, text_y), font,
+                    font_scale, text_color, font_thickness, cv2.LINE_AA)
+
+        # Write the second line of text
+        text_y = 470
+        cv2.putText(frame, "Wirtschaftsinformatik", (text_x, text_y), font,
+                    font_scale, text_color, font_thickness, cv2.LINE_AA)
+
         # Following line overlays transparent rectangle
         # over the image
-        self.results = self.model(cv2.addWeighted(
-            overlay, alpha, img, 1 - alpha, 0))
+        # self.results = self.model(cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0))
 
     def _overlay_image(self, background, foreground, x, y):
         foreground_alpha = foreground[:, :, 3] / 255.0

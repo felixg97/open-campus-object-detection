@@ -27,6 +27,6 @@ if __name__ == "__main__":
         exit()
 
     if True:
-        app.start_capturing(cam=0)
+        app.start_capturing(cam=1)
 
     pass
