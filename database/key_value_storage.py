@@ -57,6 +57,5 @@ class KeyValueStorage():
         self.storage.to_hdf(self.storage_path +
                             self.storage_file_name, key="df")
 
-    def show_entries(self):
-        pd.set_option('display.max_rows', self.storage.shape[0]+1)
-        print(self.storage)
+    def get_all_entries(self):
+        return self.storage.copy()

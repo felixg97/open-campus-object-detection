@@ -27,43 +27,31 @@ class ChatgptApi():
 
         if self.database:
             response = self.database.get(label)
-            if response:
+            if response is not None:
+                print('We have a response in the database.')
                 return response
 
         pre_message = {
             "role": "user",
-            "content": "This following are not questions about beliefs or opinions. Please answer very concisely."
+            "content": "The following are not questions about beliefs or opinions. Please answer very concisely in maximum 20 words."
         }
 
         first_question = {
             "role": "user",
-            "content": f"What is a {label}? "
+            "content": f"What is a {label}? If usable, what can a {label} be used for? If not usable what is a {label} able to do? "
         }
 
-        response1 = openai.ChatCompletion.create(
+        response = openai.ChatCompletion.create(
             model=self.gpt_model,
             messages=[
                 pre_message,
-                first_question
-            ],
-        )
-        second_question = {
-            "role": "user",
-            "content": f"What can a {label} be used for or what is a {label} able to do?"
-        }
-
-        response2 = openai.ChatCompletion.create(
-            model=self.gpt_model,
-            messages=[
-                pre_message,
-                second_question
+                first_question,
             ],
         )
 
-        response1 = response1["choices"][0]["message"]["content"]
-        response2 = response2["choices"][0]["message"]["content"]
+        response = response["choices"][0]["message"]["content"]
 
-        response = response1 + " " + response2
+        print(response)
 
         self.database.update(label, response)
 

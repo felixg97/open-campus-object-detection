@@ -1,7 +1,6 @@
 
 import torch
 
-from PIL import Image
 from env import API_KEY
 from env import BASE_PATH
 from database.key_value_storage import KeyValueStorage
