@@ -18,9 +18,9 @@ class ObjectDetectionApp():
     def start_capturing(self, cam=0):
 
         # Fullscreen
-        #window_name = "Object Detection"
-        #cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
-        #cv2.setWindowProperty(
+        # window_name = "Object Detection"
+        # cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+        # cv2.setWindowProperty(
         #    window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
         self.capture = cv2.VideoCapture()
@@ -48,7 +48,7 @@ class ObjectDetectionApp():
 
                     text = "No description."
                     if self.api:
-                        text = self.api.get_label_response(label, test=True)
+                        text = self.api.get_label_response(label)
                         pass
 
                     # Plot description
@@ -89,7 +89,8 @@ class ObjectDetectionApp():
         overlay = img.copy()
         alpha = 0.3
 
-        dic = {"ä": "ae", "Ä": "Ae", "ö": "oe", "Ö": "Oe", "ü": "ue", "Ü": "ue"}
+        dic = {"ä": "ae", "Ä": "Ae", "ö": "oe",
+               "Ö": "Oe", "ü": "ue", "Ü": "ue"}
         for i, j in dic.items():
             label = label.replace(i, j)
 
@@ -97,10 +98,11 @@ class ObjectDetectionApp():
 
         pos = 15 * (len(label) - 1)
 
-        cv2.rectangle(overlay, (xA,yA - pos - 15), (xB, yB), text_color_bg, -1)
+        cv2.rectangle(overlay, (xA, yA - pos - 15),
+                      (xB, yB), text_color_bg, -1)
 
         # Better performance: without transparent background form, then comment out line 165 addWeighted(...)
-        #cv2.rectangle(img, (xA,yA - pos - 15), (xB, yB), text_color_bg, -1)
+        # cv2.rectangle(img, (xA,yA - pos - 15), (xB, yB), text_color_bg, -1)
 
         for i in range(0, len(label)):
             cv2.putText(img, label[i], (xA, yA - pos), font, fontScale,
@@ -157,7 +159,8 @@ class ObjectDetectionApp():
 
         # Following line overlays transparent rectangle
         # over the image
-        self.results = self.model(cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0))
+        self.results = self.model(cv2.addWeighted(
+            overlay, alpha, img, 1 - alpha, 0))
 
     def _overlay_image(self, background, foreground, x, y):
         foreground_alpha = foreground[:, :, 3] / 255.0
@@ -165,9 +168,10 @@ class ObjectDetectionApp():
 
         for c in range(0, 3):
             background[y:y + foreground.shape[0], x:x + foreground.shape[1], c] = (
-                    foreground_alpha * foreground[:, :, c] +
-                    background_alpha *
-                    background[y:y + foreground.shape[0], x:x + foreground.shape[1], c]
+                foreground_alpha * foreground[:, :, c] +
+                background_alpha *
+                background[y:y + foreground.shape[0],
+                           x:x + foreground.shape[1], c]
             )
 
         return background

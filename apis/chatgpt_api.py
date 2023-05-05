@@ -28,7 +28,7 @@ class ChatgptApi():
         if self.database:
             response = self.database.get(label)
             if response is not None:
-                print('We have a response in the database.')
+                # print('We have a response in the database.')
                 return response
 
         pre_message = {
