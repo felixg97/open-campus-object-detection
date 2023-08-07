@@ -3,6 +3,7 @@ import torch
 
 from env import API_KEY
 from env import BASE_PATH
+from env import CAM_IDX
 from database.key_value_storage import KeyValueStorage
 from apis.chatgpt_api import ChatgptApi
 from object_detection_app import ObjectDetectionApp
@@ -27,6 +28,6 @@ if __name__ == "__main__":
         exit()
 
     if True:
-        app.start_capturing(cam=1)
+        app.start_capturing(cam=CAM_IDX)
 
     pass
